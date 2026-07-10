@@ -128,7 +128,7 @@ def main(weights, targets, sets, batchsize, num_workers, sampling_rate=None):
             loader = DataLoader(
                 generator, batch_size=batchsize, shuffle=False, num_workers=num_workers
             )
-            trainer = pl.Trainer(accelerator="gpu", devices=1)
+            trainer = pl.Trainer(accelerator="auto", devices=1)
 
             predictions = trainer.predict(model, loader)
 

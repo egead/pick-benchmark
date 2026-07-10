@@ -5,11 +5,31 @@ This file contains the model specifications.
 import seisbench.models as sbm
 import seisbench.generate as sbg
 
+import os
+import sys
+from pathlib import Path
 import pytorch_lightning as pl
 import torch
 import torch.nn.functional as F
 import numpy as np
 from abc import abstractmethod, ABC
+
+
+def find_picovar_repo():
+    candidates = [
+        Path.home() / "picovar",
+        Path("/mnt/second_drive/ege/picovar"),
+    ]
+    if "PICOVAR_DIR" in os.environ:
+        candidates.insert(0, Path(os.environ["PICOVAR_DIR"]))
+    for candidate in candidates:
+        if (candidate / "picovar").is_dir():
+            return candidate
+    raise FileNotFoundError("picovar repo not found; set PICOVAR_DIR")
+
+
+sys.path.insert(0, str(find_picovar_repo()))
+from picovar.lightning_module import PicovarLit
 
 # Allows to import this file in both jupyter notebook and code
 try:
