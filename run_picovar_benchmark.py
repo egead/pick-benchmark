@@ -1,7 +1,11 @@
 import csv
+import os
 import subprocess
 import sys
 from pathlib import Path
+
+if Path("/mnt/second_drive/seisbench").is_dir():
+    os.environ.setdefault("SEISBENCH_CACHE_ROOT", "/mnt/second_drive/seisbench")
 
 import torch
 import yaml
