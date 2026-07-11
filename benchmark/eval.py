@@ -61,8 +61,23 @@ def main(weights, targets, sets, batchsize, num_workers, sampling_rate=None):
         weight_path_name = weights.name
 
     dataset = data.get_dataset_by_name(data_name)(
-        sampling_rate=100, component_order="ZNE", dimension_order="NCW", cache="full"
+        sampling_rate=100, component_order="ZNE", dimension_order="NCW", cache=None
     )
+    try:
+        waveform_bytes = sum(
+            p.stat().st_size for p in dataset.path.glob("waveforms*.hdf5")
+        )
+    except AttributeError:
+        waveform_bytes = 0
+    if waveform_bytes < 200e9:
+        dataset = data.get_dataset_by_name(data_name)(
+            sampling_rate=100, component_order="ZNE", dimension_order="NCW", cache="full"
+        )
+    else:
+        logging.warning(
+            f"Dataset waveforms are {waveform_bytes / 1e9:.0f} GB, "
+            "evaluating without cache to bound memory"
+        )
 
     if sampling_rate is not None:
         dataset.sampling_rate = sampling_rate
@@ -84,7 +99,8 @@ def main(weights, targets, sets, batchsize, num_workers, sampling_rate=None):
             split._build_trace_name_to_idx_dict()
 
         logging.warning(f"Starting set {eval_set}")
-        split.preload_waveforms(pbar=True)
+        if getattr(dataset, "cache", None):
+            split.preload_waveforms(pbar=True)
 
         for task in ["1", "23"]:
             task_csv = targets / f"task{task}.csv"
