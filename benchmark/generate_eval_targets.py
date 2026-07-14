@@ -67,7 +67,9 @@ def main(dataset_name, output, tasks, sampling_rate, noise_before_events):
     output.mkdir(parents=True, exist_ok=False)
 
     if "split" in dataset.metadata.columns:
-        dataset.filter(dataset["split"].isin(["dev", "test"]), inplace=True)
+        mask = dataset["split"].isin(["dev", "test"])
+        mask = mask.values if hasattr(mask, "values") else mask
+        dataset.filter(mask, inplace=True)
 
     dataset.preload_waveforms(pbar=True)
 
