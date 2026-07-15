@@ -84,8 +84,13 @@ def main(weights, targets, sets, batchsize, num_workers, sampling_rate=None):
         pred_root = pred_root + "_resampled"
         weight_path_name = weight_path_name + f"_{sampling_rate}"
 
+    if "split" not in dataset.metadata.columns:
+        sets = [""]
     for eval_set in sets:
-        split = dataset.get_split(eval_set)
+        if eval_set == "":
+            split = dataset
+        else:
+            split = dataset.get_split(eval_set)
         if targets.name == "instance":
             logging.warning(
                 "Overwriting noise trace_names to allow correct identification"
