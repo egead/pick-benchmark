@@ -53,7 +53,7 @@ def main(dataset_name, output, tasks, sampling_rate, noise_before_events):
     dataset_args = {
         "sampling_rate": sampling_rate,
         "dimension_order": "NCW",
-        "cache": "full",
+        "cache": "full" if dataset_name != "SCEDC" else "trace",
     }
 
     try:
@@ -71,7 +71,10 @@ def main(dataset_name, output, tasks, sampling_rate, noise_before_events):
         mask = mask.values if hasattr(mask, "values") else mask
         dataset.filter(mask, inplace=True)
 
-    dataset.preload_waveforms(pbar=True)
+    if dataset_name != "SCEDC":
+        dataset.preload_waveforms(pbar=True)
+    else:
+        print(f"Skipping preload for {dataset_name} (using trace-level caching)")
 
     if tasks[0]:
         generate_task1(dataset, output, sampling_rate, noise_before_events)
