@@ -71,7 +71,7 @@ def ensure_checkpoint(key, data_name):
     return True
 
 
-PUBLISHED_TARGETS_URL = "https://dcache-demo.desy.de:2443/Helmholtz/HelmholtzAI/SeisBench/auxiliary/pick-benchmark/targets"
+PUBLISHED_TARGETS_URL = "http://hifis-storage.desy.de/Helmholtz/HelmholtzAI/SeisBench/auxiliary/pick-benchmark/targets"
 
 
 def ensure_targets(key, data_name):
